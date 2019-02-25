@@ -1,0 +1,167 @@
+Sub Multiple_Year_Stock_Data():
+
+Dim lastrow As Double
+Dim lastcolumn As Double
+Dim i As Double
+Dim j As Double
+Dim ticker As String
+Dim oprice As Double
+Dim cprice As Double
+Dim totalvolume As Double
+Dim yearlychange As Double
+Dim percentchange As Double
+Dim pinc As Double
+Dim pdec As Double
+Dim gtv As Double
+'Dim stick As String
+Dim itick As String
+Dim dtick As String
+Dim gtick As String
+Dim count As Integer
+
+count = 1
+yearlychange = 0
+
+'loop through all sheets
+
+For Each ws In Worksheets
+    
+    ws.Activate
+
+        lastrow = Cells(Rows.count, 1).End(xlUp).Row
+        
+        lastcolumn = Cells(2, Columns.count).End(xlToLeft).Column
+        
+'MsgBox ("ACtive Sheet : " + ws.Name + "Last Row " + Str(lastrow) + "Column" + Str(lastcolum))
+
+
+Dim summary_row_table As Double
+    summary_row_table = 2
+    
+'assign varibales to dimensions
+        ws.Cells(1, 10).Value = "Ticker"
+        ws.Cells(1, 11).Value = "Yearly($) Change"
+        ws.Cells(1, 12).Value = "Percent (%) Change"
+        ws.Cells(1, 13).Value = "Total Volume"
+          
+        ws.Cells(1, 17).Value = "Stock Ticker"
+        ws.Cells(1, 18).Value = "Value"
+        ws.Cells(2, 16).Value = "Greatest % Increase"
+        ws.Cells(3, 16).Value = "Greatest % Decrease"
+        ws.Cells(4, 16).Value = "Greatest Volume"
+
+        ws.Cells(2, 18).Value = -0
+        ws.Cells(3, 18).Value = -0
+        ws.Cells(4, 18).Value = 0
+        itick = ""
+        dtick = ""
+        gtick = ""
+
+
+'loop through all sheets
+i = 2
+If count = 1 Then
+    oprice = ws.Cells(i, 3).Value
+End If
+
+ For i = 2 To lastrow
+    j = 1
+    
+    If count = 1 Then
+        If ws.Cells(i, 3).Value = 0 Then
+            oprice = 1
+        Else
+            oprice = ws.Cells(i, 3).Value
+        End If
+    End If
+    
+    'divide by zero
+    If ws.Cells(i, 3).Value = 0 Then
+    percentchange = 0
+    End If
+    
+    ' Creating loop for tickers and calcs
+    If ws.Cells(i, j).Value <> ws.Cells(i + 1, j).Value Then
+    
+    cprice = ws.Cells(i, 6).Value
+    ticker = ws.Cells(i, 1).Value
+    Range("J" & summary_row_table).Value = ticker
+    
+    totalvolume = totalvolume + ws.Cells(i, 7).Value
+    ws.Range("M" & summary_row_table).Value = totalvolume
+    ws.Range("M" & summary_row_table).NumberFormat = "0,00"
+    
+    'yearlychange = (Cells(i, 6).Value - Cells(i, 3).Value)
+    
+    yearlychange = (cprice - oprice)
+        
+    'MsgBox ("Ticker : " & ticker)
+    'MsgBox ("Open Price : " & Str(oprice))
+    'MsgBox ("Close Price : " & Str(cprice))
+    'MsgBox ("Yearly Change: " & Str(yearlychange))
+
+    ws.Range("K" & summary_row_table).Value = yearlychange
+    
+    percentchange = ((cprice / oprice) - 1)
+    ws.Range("L" & summary_row_table).Value = percentchange
+    ws.Range("L" & summary_row_table).NumberFormat = "0.00%"
+    
+    'add 1 to summary row table
+        summary_row_table = summary_row_table + 1
+         totalvolume = 0
+        yearlychage = 0
+        percentchange = 0
+        count = 1
+    Else: totalvolume = totalvolume + ws.Cells(i, 7).Value
+            count = 2
+    End If
+    
+    'color formating for yearlychange
+        If (ws.Range("K" & summary_row_table).Value >= 0) Then
+        ws.Range("K" & summary_row_table).Interior.ColorIndex = 4
+    ElseIf (ws.Range("K" & summary_row_table) < 0) Then
+        Range("K" & summary_row_table).Interior.ColorIndex = 3
+    End If
+        
+          
+        pinc = ws.Cells(2, 18).Value
+        pdec = ws.Cells(3, 18).Value
+        gtv = ws.Cells(4, 18).Value
+        itick = ws.Cells(2, 17).Value
+        dtick = ws.Cells(3, 17).Value
+        gtick = ws.Cells(4, 17).Value
+        
+      If ws.Cells(2, 18).Value > ws.Cells(i, 12).Value Then
+    ws.Cells(2, 17).Value = ticker
+    End If
+    If ws.Cells(3, 18).Value < ws.Cells(i, 12).Value Then
+    ws.Cells(3, 17).Value = ticker
+    End If
+    If ws.Cells(4, 18) > ws.Cells(i, 13).Value Then
+    ws.Cells(4, 17).Value = ticker
+    End If
+    
+        ws.Cells(2, 18).Value = -0
+        ws.Cells(3, 18).Value = -0
+        ws.Cells(4, 18).Value = 0
+        itick = ""
+        dtick = ""
+        gtick = ""
+Next i
+
+    ws.Cells(2, 18).NumberFormat = "0.00%"
+    ws.Cells(3, 18).NumberFormat = "0.00%"
+    ws.Cells(4, 18).NumberFormat = "0,00"
+    
+Next ws
+    
+End Sub
+
+
+
+        
+        'MsgBox (Cells(2, 18).Value)
+        'MsgBox (Cells(3, 18).Value)
+        'MsgBox (Cells(4, 18).Value)
+    
+
